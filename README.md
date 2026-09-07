@@ -111,9 +111,11 @@ diseño". Resumen:
   (salto automático de sub-fase) — ver `PLANIFICACION.md`.
 
 ## 10. Estado actual
-- Completadas: Fase 0-3 (scaffold, setup, motor de dados/bajas, Proyectiles).
-- Próximo paso: Fase 4, Fase de Melé (7.3-7.4 del REGLAMENTO.md), reutilizando
-  las piezas descritas arriba.
+- Completadas: Fase 0-4 (scaffold, setup, motor de dados/bajas, Proyectiles,
+  Melé) y el script de deploy a GitHub Pages.
+- Próximo paso: Fase 5, Fin de ronda / Fin de batalla (rendición, tregua,
+  retirada, aniquilación, asesinato, estancamiento), reutilizando las piezas
+  descritas arriba.
 
 ## 11. Despliegue a GitHub Pages
 ```

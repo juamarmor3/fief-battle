@@ -85,9 +85,10 @@ un hito revisable. Se actualiza a medida que se completan.
       `ProjectilePhase.tsx`): Trebuchets → Bombards → Archers/Crossbowmen,
       bonus de +1f, explosión de Bombards, disparo dirigido a Nobles,
       requisitos mínimos contra Fortaleza/Fortaleza Amurallada.
-- [ ] **Fase 4 — Fase de Melé** (`melee.ts` + `MeleePhase.tsx`): SP
+- [x] **Fase 4 — Fase de Melé** (`melee.ts` + `MeleePhase.tsx`): SP
       combinados por bando, tabla SP→dados, penalizaciones de Fortaleza,
-      Excalibur.
+      Excalibur. Reutiliza `useRoundStage` + `RoundResultsAndLosses` de
+      Proyectiles sin duplicar el flujo tirada→resultados→bajas→resumen.
 - [ ] **Fase 5 — Fin de ronda / Fin de batalla**: continuar, rendición,
       tregua, retirada, aniquilación, asesinato, estancamiento (3 tiradas sin
       bajas).
@@ -99,9 +100,12 @@ un hito revisable. Se actualiza a medida que se completan.
       de Trebuchets y Bombards del bando derrotado.
 - [ ] **Fase 9 — Pantalla de resultados**: ganador, bajas totales,
       consecuencias.
-- [ ] **Fase 10 — Deploy a GitHub Pages**: GitHub Actions, `base` de Vite.
+- [x] **Fase 10 — Deploy a GitHub Pages**: `npm run deploy` (paquete
+      `gh-pages`, publica `dist/` en la rama `gh-pages`). Requiere, una sola
+      vez, activar en GitHub Settings → Pages → Source → rama `gh-pages`.
 
 ## Estado actual
 
-Completadas: Fase 0-3 (scaffold, setup, motor de dados/bajas, Proyectiles).
-Próximo paso: Fase 4 (Fase de Melé).
+Completadas: Fase 0-4 (scaffold, setup, motor de dados/bajas, Proyectiles,
+Melé) y Fase 10 (script de deploy).
+Próximo paso: Fase 5 (Fin de ronda / Fin de batalla).
