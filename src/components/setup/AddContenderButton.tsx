@@ -6,7 +6,7 @@ export function AddContenderButton() {
 
   return (
     <button type="button" onClick={() => dispatch({ type: 'ADD_PLAYER' })} disabled={atMax}>
-      {atMax ? 'Máximo 4 contendientes' : '+ Añadir contendiente'}
+      {atMax ? 'Máx. 4' : '+ Contendiente'}
     </button>
   )
 }

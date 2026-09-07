@@ -1,6 +1,14 @@
-import type { PlayerArmy, Side } from '../../rules/types'
-import { INVADER_TROOP_KINDS, OWN_TROOP_KINDS, PROJECTILE_KINDS, UNIT_LABELS } from '../../rules/types'
+import type { PlayerArmy, Side, UnitKind } from '../../rules/types'
+import {
+  INVADER_TROOP_KINDS,
+  OWN_TROOP_KINDS,
+  PLAYER_COLORS,
+  PROJECTILE_KINDS,
+  UNIT_LABELS,
+} from '../../rules/types'
 import { useBattle } from '../../context/battleStore'
+import { Stepper } from '../common/Stepper'
+import { EXCALIBUR_IMAGE, FORTIFIED_CITY_IMAGE, STRONGHOLD_IMAGE, UNIT_IMAGES } from '../../rules/unitImages'
 
 interface Props {
   player: PlayerArmy
@@ -10,14 +18,50 @@ interface Props {
 export function PlayerSetupForm({ player, canRemove }: Props) {
   const { dispatch } = useBattle()
 
+  function renderUnitGroup(title: string, kinds: UnitKind[]) {
+    return (
+      <>
+        <h4>{title}</h4>
+        <div className="unit-grid">
+          {kinds.map((unit) => (
+            <label key={unit}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                {UNIT_IMAGES[unit] && <img className="unit-icon" src={UNIT_IMAGES[unit]} alt="" />}
+                {UNIT_LABELS[unit]}
+              </span>
+              <Stepper
+                value={player.units[unit] ?? 0}
+                onChange={(count) => dispatch({ type: 'SET_UNIT_COUNT', playerId: player.id, unit, count })}
+              />
+            </label>
+          ))}
+        </div>
+      </>
+    )
+  }
+
   return (
-    <section className={`card side-${player.side.toLowerCase()}`}>
+    <section className={`card player-${player.color}`}>
+      <p className="side-tag">Bando {player.side}</p>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
         <input
           value={player.name}
           onChange={(e) => dispatch({ type: 'SET_PLAYER_NAME', playerId: player.id, name: e.target.value })}
           aria-label="Nombre del jugador"
         />
+        <div className="color-swatches" role="radiogroup" aria-label="Color del jugador">
+          {PLAYER_COLORS.map((color) => (
+            <button
+              key={color}
+              type="button"
+              role="radio"
+              aria-checked={player.color === color}
+              aria-label={color}
+              className={`color-swatch color-swatch--${color}${player.color === color ? ' color-swatch--selected' : ''}`}
+              onClick={() => dispatch({ type: 'SET_PLAYER_COLOR', playerId: player.id, color })}
+            />
+          ))}
+        </div>
         {canRemove && (
           <button type="button" onClick={() => dispatch({ type: 'REMOVE_PLAYER', playerId: player.id })}>
             Quitar
@@ -26,18 +70,16 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
       </header>
 
       <div style={{ margin: '0.75rem 0' }}>
-        <label>
-          Bando:{' '}
-          <select
-            value={player.side}
-            onChange={(e) =>
-              dispatch({ type: 'SET_PLAYER_SIDE', playerId: player.id, side: e.target.value as Side })
-            }
-          >
-            <option value="A">Bando A</option>
-            <option value="B">Bando B</option>
-          </select>
-        </label>
+        <select
+          aria-label="Bando"
+          value={player.side}
+          onChange={(e) =>
+            dispatch({ type: 'SET_PLAYER_SIDE', playerId: player.id, side: e.target.value as Side })
+          }
+        >
+          <option value="A">Bando A</option>
+          <option value="B">Bando B</option>
+        </select>
       </div>
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem' }}>
@@ -47,7 +89,7 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
             checked={player.inStronghold}
             onChange={(e) => dispatch({ type: 'SET_STRONGHOLD', playerId: player.id, value: e.target.checked })}
           />{' '}
-          En Fortaleza
+          <img className="unit-icon" src={STRONGHOLD_IMAGE} alt="" /> Fortaleza
         </label>
         <label>
           <input
@@ -57,75 +99,13 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
               dispatch({ type: 'SET_FORTIFIED_CITY', playerId: player.id, value: e.target.checked })
             }
           />{' '}
-          En Fortaleza Amurallada
+          <img className="unit-icon" src={FORTIFIED_CITY_IMAGE} alt="" /> Amurallada
         </label>
       </div>
 
-      <h4>Tropas propias</h4>
-      <div className="unit-grid">
-        {OWN_TROOP_KINDS.map((unit) => (
-          <label key={unit}>
-            {UNIT_LABELS[unit]}
-            <input
-              type="number"
-              min={0}
-              value={player.units[unit] ?? 0}
-              onChange={(e) =>
-                dispatch({
-                  type: 'SET_UNIT_COUNT',
-                  playerId: player.id,
-                  unit,
-                  count: Number(e.target.value),
-                })
-              }
-            />
-          </label>
-        ))}
-      </div>
-
-      <h4>Proyectiles</h4>
-      <div className="unit-grid">
-        {PROJECTILE_KINDS.map((unit) => (
-          <label key={unit}>
-            {UNIT_LABELS[unit]}
-            <input
-              type="number"
-              min={0}
-              value={player.units[unit] ?? 0}
-              onChange={(e) =>
-                dispatch({
-                  type: 'SET_UNIT_COUNT',
-                  playerId: player.id,
-                  unit,
-                  count: Number(e.target.value),
-                })
-              }
-            />
-          </label>
-        ))}
-      </div>
-
-      <h4>Tropas de Invasor</h4>
-      <div className="unit-grid">
-        {INVADER_TROOP_KINDS.map((unit) => (
-          <label key={unit}>
-            {UNIT_LABELS[unit]}
-            <input
-              type="number"
-              min={0}
-              value={player.units[unit] ?? 0}
-              onChange={(e) =>
-                dispatch({
-                  type: 'SET_UNIT_COUNT',
-                  playerId: player.id,
-                  unit,
-                  count: Number(e.target.value),
-                })
-              }
-            />
-          </label>
-        ))}
-      </div>
+      {renderUnitGroup('Tropas propias', OWN_TROOP_KINDS)}
+      {renderUnitGroup('Proyectiles', PROJECTILE_KINDS)}
+      {renderUnitGroup('Tropas de Invasor', INVADER_TROOP_KINDS)}
 
       <h4>Nobles</h4>
       {player.nobles.map((noble) => (
@@ -155,23 +135,12 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
             <option value="male">Hombre</option>
             <option value="female">Mujer</option>
           </select>
-          <label>
-            Títulos:{' '}
-            <input
-              type="number"
-              min={0}
-              style={{ width: '3rem' }}
-              value={noble.titles}
-              onChange={(e) =>
-                dispatch({
-                  type: 'UPDATE_NOBLE',
-                  playerId: player.id,
-                  nobleId: noble.id,
-                  patch: { titles: Number(e.target.value) },
-                })
-              }
-            />
-          </label>
+          <Stepper
+            value={noble.titles}
+            onChange={(titles) =>
+              dispatch({ type: 'UPDATE_NOBLE', playerId: player.id, nobleId: noble.id, patch: { titles } })
+            }
+          />
           <label>
             <input
               type="checkbox"
@@ -181,11 +150,14 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
                   type: 'UPDATE_NOBLE',
                   playerId: player.id,
                   nobleId: noble.id,
-                  patch: { isTitledLord: e.target.checked },
+                  patch: {
+                    isTitledLord: e.target.checked,
+                    titles: e.target.checked && noble.titles === 0 ? 1 : noble.titles,
+                  },
                 })
               }
             />{' '}
-            Titled Lord
+            Título Feudal
           </label>
           <label>
             <input
@@ -200,7 +172,7 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
                 })
               }
             />{' '}
-            Excalibur
+            <img className="unit-icon" src={EXCALIBUR_IMAGE} alt="" /> Excalibur
           </label>
           <button
             type="button"
@@ -211,7 +183,7 @@ export function PlayerSetupForm({ player, canRemove }: Props) {
         </div>
       ))}
       <button type="button" onClick={() => dispatch({ type: 'ADD_NOBLE', playerId: player.id })}>
-        + Añadir Noble
+        + Noble
       </button>
     </section>
   )

@@ -1,5 +1,9 @@
 export type Side = 'A' | 'B'
 
+export type PlayerColor = 'red' | 'blue' | 'green' | 'yellow'
+
+export const PLAYER_COLORS: PlayerColor[] = ['red', 'blue', 'green', 'yellow']
+
 export type UnitKind =
   | 'menAtArms'
   | 'archer'
@@ -49,6 +53,7 @@ export interface PlayerArmy {
   id: string
   name: string
   side: Side
+  color: PlayerColor
   units: UnitCounts
   nobles: Noble[]
   inStronghold: boolean

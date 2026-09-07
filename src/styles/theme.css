@@ -32,12 +32,12 @@
   --radius-sm: 3px;
   --radius-md: 6px;
   --shadow-card: 0 2px 6px rgba(44, 32, 21, 0.35);
-}
 
-.side-a {
-  --side-color: var(--color-forest);
-}
-
-.side-b {
-  --side-color: var(--color-burgundy);
+  /* Colores de jugador (heráldica clásica de 4 jugadores) */
+  --color-player-red: #a3312c;
+  --color-player-blue: #2f4a6b;
+  --color-player-green: #3f5a3d;
+  --color-player-yellow: #b8892b;
+  /* Variante más oscura del amarillo, solo para texto (contraste sobre pergamino) */
+  --color-player-yellow-text: #7a5c1e;
 }

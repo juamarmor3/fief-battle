@@ -1,4 +1,5 @@
-import type { BattlePhase, Noble, PlayerArmy, Side, UnitKind } from './types'
+import type { BattlePhase, Noble, PlayerArmy, PlayerColor, Side, UnitCounts, UnitKind } from './types'
+import { PLAYER_COLORS } from './types'
 
 export interface BattleState {
   phase: BattlePhase
@@ -10,6 +11,7 @@ export type BattleAction =
   | { type: 'REMOVE_PLAYER'; playerId: string }
   | { type: 'SET_PLAYER_NAME'; playerId: string; name: string }
   | { type: 'SET_PLAYER_SIDE'; playerId: string; side: Side }
+  | { type: 'SET_PLAYER_COLOR'; playerId: string; color: PlayerColor }
   | { type: 'SET_UNIT_COUNT'; playerId: string; unit: UnitKind; count: number }
   | { type: 'SET_STRONGHOLD'; playerId: string; value: boolean }
   | { type: 'SET_FORTIFIED_CITY'; playerId: string; value: boolean }
@@ -17,6 +19,14 @@ export type BattleAction =
   | { type: 'REMOVE_NOBLE'; playerId: string; nobleId: string }
   | { type: 'UPDATE_NOBLE'; playerId: string; nobleId: string; patch: Partial<Noble> }
   | { type: 'START_BATTLE' }
+  | { type: 'SET_PHASE'; phase: BattlePhase }
+  | {
+      type: 'APPLY_LOSSES'
+      removals: { playerId: string; units: UnitCounts }[]
+      nobleSlainIds?: string[]
+      nobleCapturedIds?: string[]
+      captorPlayerId?: string
+    }
 
 let nextId = 1
 function makeId(prefix: string): string {
@@ -28,6 +38,7 @@ function createPlayer(side: Side, index: number): PlayerArmy {
     id: makeId('player'),
     name: `Jugador ${index}`,
     side,
+    color: PLAYER_COLORS[(index - 1) % PLAYER_COLORS.length],
     units: {},
     nobles: [],
     inStronghold: false,
@@ -93,6 +104,16 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
         players: updatePlayer(state.players, action.playerId, (p) => ({
           ...p,
           side: action.side,
+        })),
+      }
+    }
+
+    case 'SET_PLAYER_COLOR': {
+      return {
+        ...state,
+        players: updatePlayer(state.players, action.playerId, (p) => ({
+          ...p,
+          color: action.color,
         })),
       }
     }
@@ -163,6 +184,41 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
 
     case 'START_BATTLE': {
       return { ...state, phase: 'projectiles-trebuchet' }
+    }
+
+    case 'SET_PHASE': {
+      return { ...state, phase: action.phase }
+    }
+
+    case 'APPLY_LOSSES': {
+      let players = state.players
+      for (const removal of action.removals) {
+        players = updatePlayer(players, removal.playerId, (p) => {
+          const units = { ...p.units }
+          for (const kind of Object.keys(removal.units) as UnitKind[]) {
+            const delta = removal.units[kind] ?? 0
+            units[kind] = Math.max(0, (units[kind] ?? 0) - delta)
+          }
+          return { ...p, units }
+        })
+      }
+
+      const nobleSlainIds = action.nobleSlainIds ?? []
+      const nobleCapturedIds = action.nobleCapturedIds ?? []
+      if (nobleSlainIds.length > 0 || nobleCapturedIds.length > 0) {
+        players = players.map((p) => ({
+          ...p,
+          nobles: p.nobles.map((n) => {
+            if (nobleSlainIds.includes(n.id)) return { ...n, status: 'slain' as const }
+            if (nobleCapturedIds.includes(n.id)) {
+              return { ...n, status: 'captured' as const, captorPlayerId: action.captorPlayerId }
+            }
+            return n
+          }),
+        }))
+      }
+
+      return { ...state, players }
     }
 
     default:
