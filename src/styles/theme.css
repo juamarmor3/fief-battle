@@ -1,0 +1,43 @@
+/*
+  Paleta "Inglaterra medieval": pergamino, cuero, granate y oro viejo.
+  Cinzel para titulares (evoca grabados/heráldica), EB Garamond para texto,
+  ambas legibles a diferencia de un blackletter puro.
+*/
+:root {
+  --color-parchment: #f1e6cf;
+  --color-parchment-dark: #e3d3ab;
+  --color-ink: #2c2015;
+  --color-ink-soft: #4a3b28;
+  --color-leather: #6b4226;
+  --color-leather-dark: #4a2e19;
+  --color-burgundy: #7a1f2b;
+  --color-burgundy-dark: #591620;
+  --color-gold: #b8892b;
+  --color-gold-light: #d9b25c;
+  --color-forest: #3f5a3d;
+  --color-steel: #5c6b73;
+
+  --color-bg: var(--color-parchment);
+  --color-surface: var(--color-parchment-dark);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-ink-soft);
+  --color-accent: var(--color-burgundy);
+  --color-accent-strong: var(--color-burgundy-dark);
+  --color-highlight: var(--color-gold);
+  --color-border: var(--color-leather);
+
+  --font-display: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --font-body: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --shadow-card: 0 2px 6px rgba(44, 32, 21, 0.35);
+}
+
+.side-a {
+  --side-color: var(--color-forest);
+}
+
+.side-b {
+  --side-color: var(--color-burgundy);
+}
