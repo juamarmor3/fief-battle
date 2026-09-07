@@ -14,6 +14,7 @@ import {
   getArcherAttackRequirement,
 } from '../../rules/projectiles'
 import { pooledActiveNobles } from '../../rules/losses'
+import { computeSideStrengthPoints } from '../../rules/strength'
 import { idleText, hitsText } from '../../rules/battleText'
 import { useSides } from '../../hooks/useSides'
 import { useRoundStage } from '../../hooks/useRoundStage'
@@ -416,10 +417,18 @@ function ArcherStep({ onComplete }: { onComplete: () => void }) {
 
 export function ProjectilePhase() {
   const { state, dispatch } = useBattle()
+  const { sideA, sideB } = useSides()
 
   const phaseOrder = ['projectiles-trebuchet', 'projectiles-bombard', 'projectiles-archer', 'melee-roll'] as const
 
   function advance() {
+    // Si algún bando se ha quedado sin fuerza (0 SP: ni tropas ni Nobles
+    // activos), no tiene sentido seguir pasando por el resto de sub-fases
+    // de Proyectiles ni por Melé: se salta directo a Fin de Ronda.
+    if (computeSideStrengthPoints(sideA) === 0 || computeSideStrengthPoints(sideB) === 0) {
+      dispatch({ type: 'SET_PHASE', phase: 'round-outcome' })
+      return
+    }
     const currentIndex = phaseOrder.indexOf(state.phase as (typeof phaseOrder)[number])
     const next = phaseOrder[currentIndex + 1]
     if (next) dispatch({ type: 'SET_PHASE', phase: next })
