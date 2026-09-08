@@ -89,9 +89,26 @@ un hito revisable. Se actualiza a medida que se completan.
       combinados por bando, tabla SP→dados, penalizaciones de Fortaleza,
       Excalibur. Reutiliza `useRoundStage` + `RoundResultsAndLosses` de
       Proyectiles sin duplicar el flujo tirada→resultados→bajas→resumen.
-- [ ] **Fase 5 — Fin de ronda / Fin de batalla**: continuar, rendición,
-      tregua, retirada, aniquilación, asesinato, estancamiento (3 tiradas sin
-      bajas).
+- [x] **Fase 5 — Fin de ronda / Fin de batalla** (`RoundOutcomePhase.tsx` +
+      campos `roundNumber`/`noLossStreak`/`roundHadLosses`/`outcome` en
+      `BattleState`): Victoria y Aniquilación se detectan solas (0 tropas y
+      0 Nobles activos en un bando o en ambos); Estancamiento igual, pero
+      **a nivel de ronda completa** en vez de tirada individual (7.8 dice
+      "3 tiradas de Battle Dice seguidas sin bajas"; la app no trackea cada
+      tirada de cada sub-fase por separado, así que se cuenta "3 rondas
+      completas seguidas sin ninguna baja"). Rendición, Retirada, Asesinato
+      y Tregua son decisiones manuales con un botón por bando (Rendición:
+      captura Nobles activos y vacía las tropas del bando que se rinde;
+      Asesinato: solo visible en la columna del bando cuyo rival se quedó
+      sin Nobles activos, con tropas restantes). Retirada se simplifica a
+      "el bando sale de la Batalla a salvo, sin vencedor": el reglamento
+      exige una Carta Passage y limita quién puede retirarse (solo el
+      Defensor, con como mucho 1 tropa por Noble); la app no modela cartas
+      ni distingue Atacante/Defensor con ese detalle, así que cualquier
+      bando puede retirarse libremente. Fase 9 (Resultado) recibe un stub
+      mínimo (`SummaryPhase.tsx`) que solo muestra `state.outcome`; el
+      resto (bajas totales, consecuencias de Asedio/Cautivos/Pillaje) queda
+      para cuando existan esas fases.
 - [ ] **Fase 6 — Asedio y Sally**: declarar asedio, construir Trebuchet,
       combate de salida del sitiado.
 - [ ] **Fase 7 — Cautivos y Rescate**: pantalla de rescate (2 + 2×títulos),
@@ -106,6 +123,6 @@ un hito revisable. Se actualiza a medida que se completan.
 
 ## Estado actual
 
-Completadas: Fase 0-4 (scaffold, setup, motor de dados/bajas, Proyectiles,
-Melé) y Fase 10 (script de deploy).
-Próximo paso: Fase 5 (Fin de ronda / Fin de batalla).
+Completadas: Fase 0-5 (scaffold, setup, motor de dados/bajas, Proyectiles,
+Melé, Fin de ronda/batalla) y Fase 10 (script de deploy).
+Próximo paso: Fase 6 (Asedio y Sally).

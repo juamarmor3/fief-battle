@@ -72,3 +72,19 @@ export type BattlePhase =
   | 'captives-ransom'
   | 'pillage'
   | 'summary'
+
+// Formas en que una Batalla puede terminar (7.8).
+export type BattleOutcomeType =
+  | 'victory'
+  | 'surrender'
+  | 'truce'
+  | 'withdraw'
+  | 'assassination'
+  | 'annihilation'
+  | 'deadlock'
+
+export interface BattleOutcome {
+  type: BattleOutcomeType
+  winnerSide?: Side
+  description: string
+}

@@ -1,9 +1,17 @@
-import type { BattlePhase, Noble, PlayerArmy, PlayerColor, Side, UnitCounts, UnitKind } from './types'
+import type { BattleOutcome, BattlePhase, Noble, PlayerArmy, PlayerColor, Side, UnitCounts, UnitKind } from './types'
 import { PLAYER_COLORS } from './types'
+import { otherSide } from './sides'
 
 export interface BattleState {
   phase: BattlePhase
   players: PlayerArmy[]
+  // Fin de Ronda / Fin de Batalla (7.8): nº de ronda en curso, si ya hubo
+  // alguna baja en la ronda actual (para el Estancamiento, 7.8) y el
+  // resultado final una vez la Batalla termina.
+  roundNumber: number
+  noLossStreak: number
+  roundHadLosses: boolean
+  outcome?: BattleOutcome
 }
 
 export type BattleAction =
@@ -27,6 +35,8 @@ export type BattleAction =
       nobleCapturedIds?: string[]
       captorPlayerId?: string
     }
+  | { type: 'END_ROUND'; decision: 'continue' }
+  | { type: 'END_ROUND'; decision: 'end'; outcome: BattleOutcome; surrenderSide?: Side }
 
 let nextId = 1
 function makeId(prefix: string): string {
@@ -61,6 +71,9 @@ export function createInitialBattleState(): BattleState {
   return {
     phase: 'setup',
     players: [createPlayer('A', 1), createPlayer('B', 2)],
+    roundNumber: 1,
+    noLossStreak: 0,
+    roundHadLosses: false,
   }
 }
 
@@ -187,11 +200,26 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
     }
 
     case 'SET_PHASE': {
+      // Al llegar a Fin de Ronda se evalúa si la ronda que acaba de terminar
+      // tuvo alguna baja: si no la tuvo, suma a la racha de Estancamiento
+      // (7.8, simplificada a nivel de ronda completa en vez de tirada
+      // individual, ver PLANIFICACION.md); si la tuvo, la racha se corta.
+      if (action.phase === 'round-outcome') {
+        return {
+          ...state,
+          phase: action.phase,
+          noLossStreak: state.roundHadLosses ? 0 : state.noLossStreak + 1,
+          roundHadLosses: false,
+        }
+      }
       return { ...state, phase: action.phase }
     }
 
     case 'APPLY_LOSSES': {
       let players = state.players
+      const anyRemoval = action.removals.some((removal) =>
+        Object.values(removal.units).some((count) => (count ?? 0) > 0),
+      )
       for (const removal of action.removals) {
         players = updatePlayer(players, removal.playerId, (p) => {
           const units = { ...p.units }
@@ -218,7 +246,44 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
         }))
       }
 
-      return { ...state, players }
+      return {
+        ...state,
+        players,
+        roundHadLosses:
+          state.roundHadLosses || anyRemoval || nobleSlainIds.length > 0 || nobleCapturedIds.length > 0,
+      }
+    }
+
+    case 'END_ROUND': {
+      if (action.decision === 'continue') {
+        return {
+          ...state,
+          phase: 'projectiles-trebuchet',
+          roundNumber: state.roundNumber + 1,
+          roundHadLosses: false,
+        }
+      }
+
+      let players = state.players
+      if (action.surrenderSide) {
+        const surrenderSide = action.surrenderSide
+        const winnerSide = otherSide(surrenderSide)
+        const captor = state.players.find((p) => p.side === winnerSide)
+        players = players.map((p) => {
+          if (p.side !== surrenderSide) return p
+          return {
+            ...p,
+            units: {},
+            nobles: p.nobles.map((n) =>
+              n.status === 'active'
+                ? { ...n, status: 'captured' as const, captorPlayerId: captor?.id }
+                : n,
+            ),
+          }
+        })
+      }
+
+      return { ...state, players, phase: 'summary', outcome: action.outcome }
     }
 
     default:

@@ -4,6 +4,8 @@ import { PhaseTracker } from './components/layout/PhaseTracker'
 import { SetupScreen } from './components/setup/SetupScreen'
 import { ProjectilePhase } from './components/phases/ProjectilePhase'
 import { MeleePhase } from './components/phases/MeleePhase'
+import { RoundOutcomePhase } from './components/phases/RoundOutcomePhase'
+import { SummaryPhase } from './components/phases/SummaryPhase'
 
 function BattleScreen() {
   const { state } = useBattle()
@@ -17,6 +19,10 @@ function BattleScreen() {
       return <ProjectilePhase />
     case 'melee-roll':
       return <MeleePhase />
+    case 'round-outcome':
+      return <RoundOutcomePhase />
+    case 'summary':
+      return <SummaryPhase />
     default:
       return <p>Fase «{state.phase}» en construcción.</p>
   }
