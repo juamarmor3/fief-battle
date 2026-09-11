@@ -72,3 +72,20 @@ describe('END_ROUND surrender (7.8)', () => {
     expect(nobleId).toBe(updatedA.nobles[0].id)
   })
 })
+
+describe('DECLARE_SIEGE / LIFT_SIEGE (7.9)', () => {
+  it('moves to the siege phase and records the besieged side', () => {
+    let state = createInitialBattleState()
+    state = battleReducer(state, { type: 'DECLARE_SIEGE', besiegedSide: 'B' })
+    expect(state.phase).toBe('siege')
+    expect(state.siege).toEqual({ besiegedSide: 'B' })
+  })
+
+  it('resumes normal rounds and clears the siege', () => {
+    let state = createInitialBattleState()
+    state = battleReducer(state, { type: 'DECLARE_SIEGE', besiegedSide: 'A' })
+    state = battleReducer(state, { type: 'LIFT_SIEGE' })
+    expect(state.phase).toBe('projectiles-trebuchet')
+    expect(state.siege).toBeUndefined()
+  })
+})

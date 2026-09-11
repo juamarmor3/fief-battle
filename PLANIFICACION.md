@@ -109,8 +109,22 @@ un hito revisable. Se actualiza a medida que se completan.
       mínimo (`SummaryPhase.tsx`) que solo muestra `state.outcome`; el
       resto (bajas totales, consecuencias de Asedio/Cautivos/Pillaje) queda
       para cuando existan esas fases.
-- [ ] **Fase 6 — Asedio y Sally**: declarar asedio, construir Trebuchet,
-      combate de salida del sitiado.
+- [x] **Fase 6 — Asedio y Sally** (`SiegePhase.tsx` + acciones
+      `DECLARE_SIEGE`/`LIFT_SIEGE`): desde Fin de Ronda, el bando cuyo
+      rival está en Fortaleza/Fortaleza Amurallada puede Declarar Asedio.
+      Sin Stockpile/Shillings/Fase de Compra, el Asedio se declara y se
+      levanta al instante (no hay coste ni turnos de construir el
+      Trebuchet). El sitiado puede intentar una Salida, que resuelve **una
+      sola ronda de Melé sin Proyectiles** (reutiliza `MeleePhase`, que
+      vuelve a la pantalla de Asedio en vez de a Fin de Ronda mientras el
+      Asedio siga activo) y vuelve a decidir. El Asedio se trata como un
+      desenlace más de Fin de Batalla: el sitiador puede levantar el
+      Asedio (retoma rondas normales) y cualquiera de los dos bandos
+      conserva Rendición/Retirada/Tregua/Asesinato (extraídos a
+      `EndBattleButtons` y `battleStatus.ts` para no duplicarlos con Fin
+      de Ronda). Se añade el desenlace "Asedio sin resolver" para cerrar
+      la sesión cuando, como en la partida real, el Asedio simplemente
+      continúa más allá de esta Batalla.
 - [ ] **Fase 7 — Cautivos y Rescate**: pantalla de rescate (2 + 2×títulos),
       negociación simplificada.
 - [ ] **Fase 8 — Pillaje**: destrucción de Mills/Abbeys, reparto/destrucción
@@ -123,6 +137,6 @@ un hito revisable. Se actualiza a medida que se completan.
 
 ## Estado actual
 
-Completadas: Fase 0-5 (scaffold, setup, motor de dados/bajas, Proyectiles,
-Melé, Fin de ronda/batalla) y Fase 10 (script de deploy).
-Próximo paso: Fase 6 (Asedio y Sally).
+Completadas: Fase 0-6 (scaffold, setup, motor de dados/bajas, Proyectiles,
+Melé, Fin de ronda/batalla, Asedio y Sally) y Fase 10 (script de deploy).
+Próximo paso: Fase 7 (Cautivos y Rescate).

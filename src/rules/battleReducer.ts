@@ -12,6 +12,9 @@ export interface BattleState {
   noLossStreak: number
   roundHadLosses: boolean
   outcome?: BattleOutcome
+  // Asedio y Sally (7.9): qué bando está sitiado mientras `phase` sea
+  // 'siege'. Ausente fuera de un Asedio.
+  siege?: { besiegedSide: Side }
 }
 
 export type BattleAction =
@@ -37,6 +40,8 @@ export type BattleAction =
     }
   | { type: 'END_ROUND'; decision: 'continue' }
   | { type: 'END_ROUND'; decision: 'end'; outcome: BattleOutcome; surrenderSide?: Side }
+  | { type: 'DECLARE_SIEGE'; besiegedSide: Side }
+  | { type: 'LIFT_SIEGE' }
 
 let nextId = 1
 function makeId(prefix: string): string {
@@ -284,6 +289,14 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
       }
 
       return { ...state, players, phase: 'summary', outcome: action.outcome }
+    }
+
+    case 'DECLARE_SIEGE': {
+      return { ...state, phase: 'siege', siege: { besiegedSide: action.besiegedSide } }
+    }
+
+    case 'LIFT_SIEGE': {
+      return { ...state, phase: 'projectiles-trebuchet', siege: undefined }
     }
 
     default:

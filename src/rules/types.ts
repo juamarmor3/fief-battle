@@ -82,6 +82,7 @@ export type BattleOutcomeType =
   | 'assassination'
   | 'annihilation'
   | 'deadlock'
+  | 'siege'
 
 export interface BattleOutcome {
   type: BattleOutcomeType

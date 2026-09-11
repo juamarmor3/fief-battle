@@ -5,6 +5,7 @@ import { SetupScreen } from './components/setup/SetupScreen'
 import { ProjectilePhase } from './components/phases/ProjectilePhase'
 import { MeleePhase } from './components/phases/MeleePhase'
 import { RoundOutcomePhase } from './components/phases/RoundOutcomePhase'
+import { SiegePhase } from './components/phases/SiegePhase'
 import { SummaryPhase } from './components/phases/SummaryPhase'
 
 function BattleScreen() {
@@ -21,6 +22,8 @@ function BattleScreen() {
       return <MeleePhase />
     case 'round-outcome':
       return <RoundOutcomePhase />
+    case 'siege':
+      return <SiegePhase />
     case 'summary':
       return <SummaryPhase />
     default:

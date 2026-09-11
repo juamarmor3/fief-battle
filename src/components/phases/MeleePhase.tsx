@@ -12,8 +12,11 @@ import type { LossTask } from './LossPanels'
 import { RoundResultsAndLosses } from './RoundResultsAndLosses'
 
 export function MeleePhase() {
-  const { dispatch } = useBattle()
+  const { state, dispatch } = useBattle()
   const { sideA, sideB } = useSides()
+  // Durante una Salida (7.9), esta ronda de Melé vuelve a la pantalla de
+  // Asedio en vez de a Fin de Ronda normal.
+  const nextPhase = state.siege ? 'siege' : 'round-outcome'
 
   // Capturados una sola vez al entrar: las bajas de esta misma ronda de
   // Melé no deben cambiar el nº de dados a mitad de camino.
@@ -35,12 +38,12 @@ export function MeleePhase() {
   const [skip] = useState(() => diceA <= 0 && diceB <= 0)
 
   function advance() {
-    dispatch({ type: 'SET_PHASE', phase: 'round-outcome' })
+    dispatch({ type: 'SET_PHASE', phase: nextPhase })
   }
 
   useEffect(() => {
-    if (skip) dispatch({ type: 'SET_PHASE', phase: 'round-outcome' })
-  }, [skip, dispatch])
+    if (skip) dispatch({ type: 'SET_PHASE', phase: nextPhase })
+  }, [skip, dispatch, nextPhase])
 
   if (skip) return null
 
@@ -96,7 +99,7 @@ export function MeleePhase() {
         applied={applied}
         recordApplied={recordApplied}
         onComplete={advance}
-        nextLabel="Fin de Ronda"
+        nextLabel={state.siege ? 'Asedio' : 'Fin de Ronda'}
       />
     </div>
   )
