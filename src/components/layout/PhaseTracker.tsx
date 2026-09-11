@@ -32,8 +32,10 @@ export function PhaseTracker() {
           const status = index < currentIndex ? 'done' : index === currentIndex ? 'current' : 'upcoming'
           return (
             <li key={stage.key} className={`phase-step phase-step--${status}`}>
-              <span className="phase-step__index">{index + 1}</span>
-              <span className="phase-step__label">{stage.label}</span>
+              <div className="phase-step__content">
+                <span className="phase-step__index">{index + 1}</span>
+                <span className="phase-step__label">{stage.label}</span>
+              </div>
             </li>
           )
         })}

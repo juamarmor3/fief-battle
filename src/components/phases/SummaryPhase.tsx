@@ -2,8 +2,8 @@ import { useBattle } from '../../context/battleStore'
 import { sideLabel } from '../../rules/sides'
 
 // Fase 9 (pendiente): de momento solo muestra el desenlace calculado en Fin
-// de Ronda (7.8). Bajas totales y consecuencias de Asedio/Cautivos/Pillaje
-// se añadirán cuando se construyan esas fases.
+// de Ronda (7.8). Bajas totales y consecuencias de Pillaje se añadirán
+// cuando se construya esa fase.
 export function SummaryPhase() {
   const { state } = useBattle()
   const outcome = state.outcome

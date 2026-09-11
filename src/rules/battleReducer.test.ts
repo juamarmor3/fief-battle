@@ -66,10 +66,43 @@ describe('END_ROUND surrender (7.8)', () => {
     expect(updatedA.units.menAtArms ?? 0).toBe(0)
     expect(updatedA.nobles[0].status).toBe('captured')
     expect(updatedA.nobles[0].captorPlayerId).toBe(playerB.id)
-    expect(state.phase).toBe('summary')
+    expect(state.phase).toBe('captives-ransom')
     expect(state.outcome?.type).toBe('surrender')
     // Sanity check for unused var lint
     expect(nobleId).toBe(updatedA.nobles[0].id)
+  })
+})
+
+describe('END_ROUND without captives (7.6-7.7)', () => {
+  it('goes straight to summary when nobody is left captive', () => {
+    let state = createInitialBattleState()
+    state = battleReducer(state, {
+      type: 'END_ROUND',
+      decision: 'end',
+      outcome: { type: 'truce', description: 'test' },
+    })
+    expect(state.phase).toBe('summary')
+  })
+})
+
+describe('RELEASE_CAPTIVE (7.7)', () => {
+  it('frees the Noble and clears its captor', () => {
+    let state = createInitialBattleState()
+    const [playerA] = state.players
+    state = battleReducer(state, { type: 'ADD_NOBLE', playerId: playerA.id })
+    const nobleId = state.players[0].nobles[0].id
+    state = battleReducer(state, {
+      type: 'UPDATE_NOBLE',
+      playerId: playerA.id,
+      nobleId,
+      patch: { status: 'captured', captorPlayerId: 'someone-else' },
+    })
+
+    state = battleReducer(state, { type: 'RELEASE_CAPTIVE', playerId: playerA.id, nobleId })
+
+    const updated = state.players.find((p) => p.id === playerA.id)!
+    expect(updated.nobles[0].status).toBe('active')
+    expect(updated.nobles[0].captorPlayerId).toBeUndefined()
   })
 })
 

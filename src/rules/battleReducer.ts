@@ -42,6 +42,7 @@ export type BattleAction =
   | { type: 'END_ROUND'; decision: 'end'; outcome: BattleOutcome; surrenderSide?: Side }
   | { type: 'DECLARE_SIEGE'; besiegedSide: Side }
   | { type: 'LIFT_SIEGE' }
+  | { type: 'RELEASE_CAPTIVE'; playerId: string; nobleId: string }
 
 let nextId = 1
 function makeId(prefix: string): string {
@@ -288,7 +289,16 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
         })
       }
 
-      return { ...state, players, phase: 'summary', outcome: action.outcome }
+      // Rescate (7.7): si al terminar la Batalla queda algún Noble cautivo
+      // (incluidos los recién capturados por una Rendición) se pasa por la
+      // pantalla de Cautivos antes del Resultado.
+      const hasCaptives = players.some((p) => p.nobles.some((n) => n.status === 'captured'))
+      return {
+        ...state,
+        players,
+        phase: hasCaptives ? 'captives-ransom' : 'summary',
+        outcome: action.outcome,
+      }
     }
 
     case 'DECLARE_SIEGE': {
@@ -297,6 +307,18 @@ export function battleReducer(state: BattleState, action: BattleAction): BattleS
 
     case 'LIFT_SIEGE': {
       return { ...state, phase: 'projectiles-trebuchet', siege: undefined }
+    }
+
+    case 'RELEASE_CAPTIVE': {
+      return {
+        ...state,
+        players: updatePlayer(state.players, action.playerId, (p) => ({
+          ...p,
+          nobles: p.nobles.map((n) =>
+            n.id === action.nobleId ? { ...n, status: 'active' as const, captorPlayerId: undefined } : n,
+          ),
+        })),
+      }
     }
 
     default:

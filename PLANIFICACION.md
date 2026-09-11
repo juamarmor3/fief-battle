@@ -125,8 +125,14 @@ un hito revisable. Se actualiza a medida que se completan.
       de Ronda). Se añade el desenlace "Asedio sin resolver" para cerrar
       la sesión cuando, como en la partida real, el Asedio simplemente
       continúa más allá de esta Batalla.
-- [ ] **Fase 7 — Cautivos y Rescate**: pantalla de rescate (2 + 2×títulos),
-      negociación simplificada.
+- [x] **Fase 7 — Cautivos y Rescate** (`captives.ts` + `CaptivesPhase.tsx` +
+      acción `RELEASE_CAPTIVE`): al terminar la Batalla (Fin de Ronda o
+      Asedio), si queda algún Noble cautivo se pasa por esta pantalla antes
+      del Resultado. Sin Fase de Compra ni Chelines acumulados (ver
+      "Alcance y decisiones de partida"), el Rescate (2 + 2×Títulos) se paga
+      de golpe con un botón por Noble cautivo; no hay negociación de importe
+      parcial ni comprobación de fondos, solo pagar el importe íntegro o
+      dejarlo cautivo.
 - [ ] **Fase 8 — Pillaje**: destrucción de Mills/Abbeys, reparto/destrucción
       de Trebuchets y Bombards del bando derrotado.
 - [ ] **Fase 9 — Pantalla de resultados**: ganador, bajas totales,
@@ -137,6 +143,7 @@ un hito revisable. Se actualiza a medida que se completan.
 
 ## Estado actual
 
-Completadas: Fase 0-6 (scaffold, setup, motor de dados/bajas, Proyectiles,
-Melé, Fin de ronda/batalla, Asedio y Sally) y Fase 10 (script de deploy).
-Próximo paso: Fase 7 (Cautivos y Rescate).
+Completadas: Fase 0-7 (scaffold, setup, motor de dados/bajas, Proyectiles,
+Melé, Fin de ronda/batalla, Asedio y Sally, Cautivos y Rescate) y Fase 10
+(script de deploy).
+Próximo paso: Fase 8 (Pillaje).

@@ -6,6 +6,7 @@ import { ProjectilePhase } from './components/phases/ProjectilePhase'
 import { MeleePhase } from './components/phases/MeleePhase'
 import { RoundOutcomePhase } from './components/phases/RoundOutcomePhase'
 import { SiegePhase } from './components/phases/SiegePhase'
+import { CaptivesPhase } from './components/phases/CaptivesPhase'
 import { SummaryPhase } from './components/phases/SummaryPhase'
 
 function BattleScreen() {
@@ -24,6 +25,8 @@ function BattleScreen() {
       return <RoundOutcomePhase />
     case 'siege':
       return <SiegePhase />
+    case 'captives-ransom':
+      return <CaptivesPhase />
     case 'summary':
       return <SummaryPhase />
     default:
